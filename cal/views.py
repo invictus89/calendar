@@ -4,7 +4,7 @@ from datetime import datetime, timedelta, date
 from django.views import generic
 from django.utils.safestring import mark_safe
 from .models import *
-from .utils import Calendar
+from .utils import *
 import calendar
 from .forms import *
 from django.urls import reverse
@@ -27,18 +27,20 @@ def calender(request, month = None):
     
     return render(request, 'cal/calendar.html', context)
 
-def event(request, event_id=None):
-    instance = Event()
-    if event_id:
-        instance = get_object_or_404(Event, pk=event_id)
+def edit(request, event_id):
+    event = get_object_or_404(Event, pk=event_id)
+    if request.method == 'POST':
+        form = EventForm(request.POST, instance=event)
+        if form.is_valid():
+            form.save()
+            return redirect('calendar:calendar')
     else:
-        instance = Event()
-    
-    form = EventForm(request.POST or None, instance=instance)
-    if request.POST and form.is_valid():
-        form.save()
-        return HttpResponseRedirect(reverse('calendar:calendar'))
-    return render(request, 'cal/event.html', {'form': form})
+        form = EventForm(instance=event)
+    context = {
+        'form': form,
+        'event': event,
+    }
+    return render(request, 'cal/form.html', context)
 
 def create(request, year, month, day):
     if request.method == 'POST':
@@ -49,14 +51,15 @@ def create(request, year, month, day):
             # board.user = request.user
             temp = f'{year}-{month}-{day}'
             uploaded_at = datetime.strptime(temp, '%Y-%m-%d')
-            
-            print(uploaded_at)
-            form.save()
+            event = form.save(commit=False)
+            event.uploaded_at = uploaded_at
+            event.save()
             return redirect('calendar:calendar')
     else:
         form = EventForm()
     context = {'form': form,}
-    return render(request, 'cal/event.html', context)
+    return render(request, 'cal/form.html', context)
+
 
 def get_date(req_day):
     if req_day:

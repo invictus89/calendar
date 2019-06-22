@@ -15,11 +15,24 @@ class Calendar(HTMLCalendar):
 	def formatday(self, day, events):
 		events_per_day = events.filter(uploaded_at__day=day)
 		d = ''
-		for event in events_per_day:
-			d += f'<li> {event.get_html_url} </li>'
+		limit_index = 3
+		cur_index = 0
+		if events_per_day.count() > limit_index:
+			for event in events_per_day:
+				d += f'<li> {event.get_html_url} </li>'
+				cur_index += 1
+				if cur_index > limit_index:
+					break
+			d += f'<li>...</li>'
+		else:
+			for event in events_per_day:
+				d += f'<li> {event.get_html_url} </li>'
 
 		if day != 0:
-			return f"<td><a class='date' href='create/{self.year}/{self.month}/{day}/' data-year={self.year} data-month={self.month} data-day={day}>{day}</a><ul> {d} </ul></td>"
+			if events_per_day.count() == 0:
+				return f"<td><a class='date text-dark font-weight-bolder' href='/calendar/create/{self.year}/{self.month}/{day}/' data-year={self.year} data-month={self.month} data-day={day}>{day}</a><ul> {d} </ul></td>"
+			else:
+				return f"<td><a class='date text-dark font-weight-bolder' href='/calendar/create/{self.year}/{self.month}/{day}/' data-year={self.year} data-month={self.month} data-day={day}>{day}</a> <span class='date text-dark font-weight-bolder'>[{events_per_day.count()}]</span> <ul> {d} </ul></td>"
 		return '<td></td>'
 
 	# formats a week as a tr 
