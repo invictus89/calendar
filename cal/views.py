@@ -18,9 +18,10 @@ def calender(request, month = None):
         d = datetime.today()
 
     cal = Calendar(d.year, d.month)
-    html_cal = cal.formatmonth(withyear=True)
+    html_cal, month_name = cal.formatmonth(withyear=True)
     context = {
         'calendar': mark_safe(html_cal),
+        'month_name': month_name,
         'prev_month': prev_month(d),
         'next_month': next_month(d),
     }

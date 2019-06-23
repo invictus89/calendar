@@ -1,10 +1,11 @@
 from datetime import datetime, timedelta
-from calendar import HTMLCalendar
+from calendar import HTMLCalendar, TextCalendar
 from .models import Event
 from django.forms import ModelForm, DateInput
 from django.utils.dateparse import parse_date
+from pprint import pprint
 
-class Calendar(HTMLCalendar):
+class Calendar(TextCalendar):
 	def __init__(self, year=None, month=None):
 		self.year = year
 		self.month = month
@@ -29,10 +30,13 @@ class Calendar(HTMLCalendar):
 				d += f'<li> {event.get_html_url} </li>'
 
 		if day != 0:
+			url = '/calendar/create/{self.year}/{self.month}/{day}/'
+			a_class = 'date text-dark font-weight-bolder'
+			date_cal = 'data-year={self.year} data-month={self.month} data-day={day}'
 			if events_per_day.count() == 0:
-				return f"<td><a class='date text-dark font-weight-bolder' href='/calendar/create/{self.year}/{self.month}/{day}/' data-year={self.year} data-month={self.month} data-day={day}>{day}</a><ul> {d} </ul></td>"
+				return f"<td><a class='{a_class}' {date_cal} data-toggle='modal' data-target='#myModal'>{day}</a><ul> {d} </ul></td>"
 			else:
-				return f"<td><a class='date text-dark font-weight-bolder' href='/calendar/create/{self.year}/{self.month}/{day}/' data-year={self.year} data-month={self.month} data-day={day}>{day}</a> <span class='date text-dark font-weight-bolder'>[{events_per_day.count()}]</span> <ul> {d} </ul></td>"
+				return f"<td><a class='{a_class}' {date_cal} data-toggle='modal' data-target='#myModal'>{day}</a> <span class='date text-dark font-weight-bolder'>[{events_per_day.count()}]</span> <ul> {d} </ul></td>"
 		return '<td></td>'
 
 	# formats a week as a tr 
@@ -46,10 +50,8 @@ class Calendar(HTMLCalendar):
 	# filter events by year and month
 	def formatmonth(self, withyear=True):
 		events = Event.objects.filter(uploaded_at__year=self.year, uploaded_at__month=self.month)
-
-		cal = f'<table border="0" cellpadding="0" cellspacing="0" class="calendar">\n'
-		cal += f'{self.formatmonthname(self.year, self.month, withyear=withyear)}\n'
-		cal += f'{self.formatweekheader()}\n'
+		month_name = self.formatmonthname(self.year, self.month, width=0, withyear=withyear)
+		cal = ''
 		for week in self.monthdays2calendar(self.year, self.month):
 			cal += f'{self.formatweek(week, events)}\n'
-		return cal
+		return cal, month_name
