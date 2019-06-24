@@ -11,8 +11,9 @@ from . import views
 
 app_name = 'calendar'
 urlpatterns = [
-     path('', views.calender, name='calendar'),
-     path('<month>/', views.calender, name='calendar'),    
+     path('', views.my_calendar, name='calendar'),
+     path('<month>/', views.my_calendar, name='calendar'),    
      path('create/<year>/<month>/<day>/', views.create, name='create'),
      path('edit/<int:event_id>/', views.edit, name='edit'),
+     path('detail/<year>/<month>/<day>/', views.detail, name='detail'),
 ]

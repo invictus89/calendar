@@ -20,9 +20,8 @@ class Event(models.Model):
             bg_color = 'bg-primary'
         elif self.title_type == '뉴스':
             bg_color = 'bg-secondary'
-        elif self.title_type == '사건 및 사고':
+        elif self.title_type == '사건사고':
             bg_color = 'bg-danger'
         elif self.title_type == '역사':
             bg_color = 'bg-success'
-
-        return f'<a href="{url}" class="my-day text-white font-weight-bolder {bg_color}"> {self.title} </a>'
+        return f'<a href="#" class="my-day text-white font-weight-bolder {bg_color}" data-toggle="modal" data-target="#myModal" data-title={self.title} data-description={self.description} data-title_type={self.title_type} data-id={self.id}> {self.title} </a>'

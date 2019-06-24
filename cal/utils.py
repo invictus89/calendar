@@ -30,13 +30,10 @@ class Calendar(TextCalendar):
 				d += f'<li> {event.get_html_url} </li>'
 
 		if day != 0:
-			url = '/calendar/create/{self.year}/{self.month}/{day}/'
-			a_class = 'date text-dark font-weight-bolder'
-			date_cal = 'data-year={self.year} data-month={self.month} data-day={day}'
 			if events_per_day.count() == 0:
-				return f"<td><a class='{a_class}' {date_cal} data-toggle='modal' data-target='#myModal'>{day}</a><ul> {d} </ul></td>"
+				return f"<td onclick='td_click({self.year}, {self.month}, {day})' data-toggle='modal' data-target='#myModalSecond'><a class='date text-dark font-weight-bolder' href='/calendar/create/{self.year}/{self.month}/{day}/' data-year={self.year} data-month={self.month} data-day={day} data-toggle='modal' data-target='#myModal'>{day}</a><ul> {d} </ul></td>"
 			else:
-				return f"<td><a class='{a_class}' {date_cal} data-toggle='modal' data-target='#myModal'>{day}</a> <span class='date text-dark font-weight-bolder'>[{events_per_day.count()}]</span> <ul> {d} </ul></td>"
+				return f"<td onclick='td_click({self.year}, {self.month}, {day})' data-toggle='modal' data-target='#myModalSecond'><a class='date text-dark font-weight-bolder' href='/calendar/create/{self.year}/{self.month}/{day}/' data-year={self.year} data-month={self.month} data-day={day} data-toggle='modal' data-target='#myModal'>{day}</a> <span class='date text-dark font-weight-bolder'>[{events_per_day.count()}]</span> <ul> {d} </ul></td>"
 		return '<td></td>'
 
 	# formats a week as a tr 

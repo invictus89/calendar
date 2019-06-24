@@ -1,0 +1,85 @@
+{% load bootstrap4 %}
+<!-- The Modal -->
+<div class="modal" id="myModalSecond">
+    <div class="modal-dialog modal-dialog-centered modal-xl">
+      <div class="modal-content text-center">
+      
+        <!-- Modal Header -->
+        <div class="modal-header">
+          <h4 class="modal-title">등록된 모든 정보를 보여줍니다.</h4>
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+        </div>
+        
+        <!-- Modal body -->
+        <div class="modal-body">
+					{% if form.errors %}
+						{% for field in form %}
+							{% for error in field.errors %}
+								<div class="alert alert-danger">
+										{{ field.label }} <strong>{{ error|escape }}</strong>
+								</div>
+							{% endfor %}
+						{% endfor %}
+					{% for error in form.non_field_errors %}
+						<div class="alert alert-danger">
+							{{ field.label }} <strong>{{ error|escape }}</strong>
+						</div>
+					{% endfor %}
+				{% endif %}
+
+				<div class="row">
+					<div class="curInfo col-6">
+						<table style="width:100%">
+							
+						</table>
+					</div>
+
+					<div class="allInfo col-6">
+						<table style="width:100%">
+							
+						</table>
+					</div>
+        </div>
+				<div class="modal-footer text-center">
+					<button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+				</div>
+      </div>
+    </div>
+  </div>
+
+	<script>
+	function td_click(year, month, day){
+		axios.get(`/calendar/detail/${year}/${month}/${day}/`)
+			.then( response => {
+				cur_dates = JSON.parse(response.data.cur_dates)
+				all_dates = JSON.parse(response.data.all_dates)
+				cur_html = `<tr><th style="height: 3rem;" colspan="2">${year}년 ${month}월 ${day}일 정보</th></tr>`
+				all_html = `<tr><th style="height: 3rem;" colspan="2">${month}월 ${day}일의 모든 정보</th></tr>`
+
+				for(index in cur_dates){
+					bgColor = ''
+					const type = cur_dates[index].fields.title_type
+					if(type === '기념일') bgColor = 'bg-primary'
+					else if(type === '사건사고') bgColor = 'bg-danger'
+					else if(type === '뉴스') bgColor ='bg-secondary'
+					else bgColor = 'bg-success'
+					
+					cur_html += `<tr><td><span class="text-white ${bgColor} text-center">${cur_dates[index].fields.title_type}</span></td><td><span>${cur_dates[index].fields.title}</span></td></tr>`
+				}
+
+				for(index in all_dates){
+					bgColor = ''
+					const type = cur_dates[index].fields.title_type
+					if(type === '기념일') bgColor = 'bg-primary'
+					else if(type === '사건사고') bgColor = 'bg-danger'
+					else if(type === '뉴스') bgColor ='bg-secondary'
+					else bgColor = 'bg-success'
+					console.log(cur_dates[index].fields)
+					all_html += `<tr><td><span class="text-white ${bgColor} text-center">${all_dates[index].fields.title_type}</span></td><td><span>${all_dates[index].fields.title}</span></td></tr>`
+				}
+
+				document.querySelector('.curInfo > table').innerHTML=cur_html
+				document.querySelector('.allInfo > table').innerHTML=all_html
+			})		
+	}
+	</script>
